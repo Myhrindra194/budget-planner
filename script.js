@@ -12,6 +12,8 @@ balanceValue.textContent = parseFloat("0");
 expenseValue.textContent = parseFloat("0");
 document.querySelector(".totalValue").textContent = parseFloat("0");
 
+document.querySelector(".updateAction").style.display = "none";
+
 function getDate(){
     let date = new Date().toString().split(" ");
     return date[0] +" "+ date[1] + " "+ date[2];
@@ -42,7 +44,7 @@ const addList = () => {
             <div class="col-4 d-flex justify-content-end">
                 <h5 class="text-muted">${inputCost.value}</h5>
                 <span class="mx-3"><i class="fas fa-trash buttonDelete"></i></span>
-                <span class=""><i class="fas fa-edit"></i></span>
+                <span class=""><i class="fas fa-edit buttonEdit"></i></span>
             </div>
         </div>
 
@@ -54,22 +56,58 @@ const addList = () => {
 
         inputLabel.value = "";
         inputCost.value = "";
+
         deleteList()
+        updateList()
 
     }
 }
 const deleteList = () => {
-    document.querySelectorAll(".buttonDelete").forEach(btn =>{
+    document.querySelectorAll(".buttonDelete").forEach(btn => {
         btn.addEventListener("click", () => {
             expenseValue.textContent = parseInt(expenseValue.textContent) - parseInt(btn.parentElement.previousElementSibling.textContent)
             balanceValue.textContent = parseInt(balanceValue.textContent) + parseInt(btn.parentElement.previousElementSibling.textContent)
-            btn.parentElement.parentNode.parentNode.parentElement.parentElement.remove();
+            btn.parentElement.parentElement.parentElement.parentElement.parentElement.remove();
 
         })
 })
 }
 
+const updateList = () => {
 
+    document.querySelectorAll(".buttonEdit").forEach(btn => {
+        btn.addEventListener("click", () => {
+
+            inputLabel.value = btn.parentElement.parentElement.previousElementSibling.lastElementChild.textContent;
+            inputCost.value = btn.parentElement.previousElementSibling.previousElementSibling.textContent;
+
+            buttonAddList.style.display = "none";
+            document.querySelector(".updateAction").style.display = "block";
+
+            document.querySelector(".updList").addEventListener("click", () => {
+                previousValue = btn.parentElement.previousElementSibling.previousElementSibling.textContent
+                btn.parentElement.parentElement.previousElementSibling.lastElementChild.textContent = inputLabel.value;
+                btn.parentElement.previousElementSibling.previousElementSibling.textContent = inputCost.value;
+
+                expenseValue.textContent = parseInt(expenseValue.textContent) - parseInt(previousValue) + parseInt(inputCost.value)
+                balanceValue.textContent = parseInt(balanceValue.textContent) + parseInt(previousValue) - parseInt(inputCost.value)
+
+                inputLabel.value = "";
+                inputCost.value = "";
+                buttonAddList.style.display = "block";
+                document.querySelector(".updateAction").style.display = "none";
+            })
+            document.querySelector(".cancelUpd").addEventListener("click", () => {
+
+                inputLabel.value = "";
+                inputCost.value = "";
+                buttonAddList.style.display = "block";
+                document.querySelector(".updateAction").style.display = "none";
+            })
+            
+        })
+    })
+}
 
 
 buttonBudget.addEventListener("click",() => {
