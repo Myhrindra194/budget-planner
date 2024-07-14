@@ -41,7 +41,7 @@ const addList = () => {
             </div>
             <div class="col-4 d-flex justify-content-end">
                 <h5 class="text-muted">${inputCost.value}</h5>
-                <span class="mx-3"><i class="fas fa-trash"></i></span>
+                <span class="mx-3"><i class="fas fa-trash buttonDelete"></i></span>
                 <span class=""><i class="fas fa-edit"></i></span>
             </div>
         </div>
@@ -54,12 +54,23 @@ const addList = () => {
 
         inputLabel.value = "";
         inputCost.value = "";
+        deleteList()
+
     }
 }
+const deleteList = () => {
+    document.querySelectorAll(".buttonDelete").forEach(btn =>{
+        btn.addEventListener("click", () => {
+            expenseValue.textContent = parseInt(expenseValue.textContent) - parseInt(btn.parentElement.previousElementSibling.textContent)
+            balanceValue.textContent = parseInt(balanceValue.textContent) + parseInt(btn.parentElement.previousElementSibling.textContent)
+            btn.parentElement.parentNode.parentNode.parentElement.parentElement.remove();
 
-const deleteElement = () => {
-    
+        })
+})
 }
+
+
+
 
 buttonBudget.addEventListener("click",() => {
     addBudget();
@@ -69,6 +80,8 @@ buttonBudget.addEventListener("click",() => {
 buttonAddList.addEventListener("click", () => {
     addList();
 });
+
+
 
 window.addEventListener("keypress",(e) => {
     if (e.key === "Enter") {
