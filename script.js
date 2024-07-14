@@ -22,9 +22,10 @@ const addBudget = () => {
     if(inputBudget.value != ""){
         balanceValue.textContent = parseFloat(inputBudget.value);
         document.querySelector(".totalValue").textContent = inputBudget.value;
-        inputBudget.value = "";
     }
+    inputBudget.value = "";
 }
+
 const addList = () => {
     if(inputLabel.value.trim() != "" && inputCost.value != "" && inputCost.value < parseInt(balanceValue.textContent)){
         expenseValue.textContent = parseInt(expenseValue.textContent) + parseInt(inputCost.value); 
@@ -34,12 +35,14 @@ const addList = () => {
         <div class="">
         <span class="text-muted">${getDate()}</span>
         <div class="row d-flex justify-content-between align-items-center">
-            <div class="fw-bold col-10 d-flex">
+            <div class="fw-bold col-8 d-flex">
                 <span class="border-start border-primary border-4"></span>
                 <h5 class= "mx-3">${inputLabel.value.trim()}</h5>
             </div>
-            <div class="col-2">
+            <div class="col-4 d-flex justify-content-end">
                 <h5 class="text-muted">${inputCost.value}</h5>
+                <span class="mx-3"><i class="fas fa-trash"></i></span>
+                <span class=""><i class="fas fa-edit"></i></span>
             </div>
         </div>
 
@@ -54,6 +57,10 @@ const addList = () => {
     }
 }
 
+const deleteElement = () => {
+    
+}
+
 buttonBudget.addEventListener("click",() => {
     addBudget();
 });
@@ -62,6 +69,13 @@ buttonBudget.addEventListener("click",() => {
 buttonAddList.addEventListener("click", () => {
     addList();
 });
+
+window.addEventListener("keypress",(e) => {
+    if (e.key === "Enter") {
+        addBudget();
+        addList();
+    }
+} )
 
 
 
