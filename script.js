@@ -1,4 +1,3 @@
-const buttonBudget = document.querySelector(".setBudget");
 const inputBudget = document.querySelector(".inputBudget");
 
 const inputLabel = document.querySelector(".inputLabel");
@@ -12,105 +11,89 @@ balanceValue.textContent = parseFloat("0");
 expenseValue.textContent = parseFloat("0");
 document.querySelector(".totalValue").textContent = parseFloat("0");
 
-document.querySelector(".updateAction").style.display = "none";
+document.querySelector(".updateButton").style.display = "none";
 
-function getDate(){
+let count = 0;
+
+function getDate() {
     let date = new Date().toString().split(" ");
-    return date[0] +" "+ date[1] + " "+ date[2];
+    return date[0] + " " + date[1] + " " + date[2];
+}
+
+function addExpense(newValue) {
+    return +expenseValue.textContent + newValue;
+}
+
+function setExpense(newValue) {
+    return +expenseValue.textContent - newValue;
+}
+
+function setBalance() {
+    return +document.querySelector(".totalValue").textContent - +expenseValue.textContent;
 }
 
 
 const addBudget = () => {
-    if(inputBudget.value != ""){
-        balanceValue.textContent = parseFloat(inputBudget.value);
+    if (inputBudget.value != "") {
+        balanceValue.textContent = +inputBudget.value;
         document.querySelector(".totalValue").textContent = inputBudget.value;
     }
     inputBudget.value = "";
 }
 
 const addList = () => {
-    if(inputLabel.value.trim() != "" && inputCost.value != "" && inputCost.value < parseInt(balanceValue.textContent)){
-        expenseValue.textContent = parseInt(expenseValue.textContent) + parseInt(inputCost.value); 
-        balanceValue.textContent = parseInt(balanceValue.textContent) - parseInt(inputCost.value);
-        
-        let item = `<li class="list-group-item ">
-        <div class="">
-        <span class="text-muted">${getDate()}</span>
-        <div class="row d-flex justify-content-between align-items-center">
-            <div class="fw-bold col-8 d-flex">
-                <span class="border-start border-primary border-4"></span>
-                <h5 class= "mx-3">${inputLabel.value.trim()}</h5>
-            </div>
-            <div class="col-4 d-flex justify-content-end">
-                <h5 class="text-muted">${inputCost.value}</h5>
-                <span class="mx-3"><i class="fas fa-trash buttonDelete"></i></span>
-                <span class=""><i class="fas fa-edit buttonEdit"></i></span>
-            </div>
-        </div>
+    if (inputLabel.value.trim() != "" && inputCost.value != "" && inputCost.value <= +balanceValue.textContent) {
+        let parentId = `list-item-${count++}`
+        let costId = `list-cost-${count}`
 
-        </div>
-      </li>`;
+        let item = `
+        <li class="list-group-item" id = "${parentId}">
+            <div class="">
+                <span class="text-muted">${getDate()}</span>
+                <div class="row d-flex justify-content-between align-items-center">
+                    <div class="fw-bold col-8 d-flex">
+                        <span class="border-start border-primary border-4"></span>
+                        <h5 class= "mx-3">${inputLabel.value.trim()}</h5>
+                    </div>
+                    <div class="col-4 d-flex justify-content-end">
+                        <h5 class="text-muted" id = "${costId}">${inputCost.value}</h5>
+                        <span class="mx-3"><i class="fas fa-trash buttonDelete" data-parent= "${parentId}" data-cost = "${costId}"></i></span>
+                        <span class=""><i class="fas fa-edit buttonEdit"></i></span>
+                    </div>
+                </div>
+            </div>
+        </li>`;
 
         document.querySelector(".list-group").innerHTML += item;
-        
+
+
+        expenseValue.textContent = addExpense(+inputCost.value);
+        balanceValue.textContent = setBalance();
 
         inputLabel.value = "";
         inputCost.value = "";
 
         deleteList()
-        updateList()
 
     }
+
 }
+
+
 const deleteList = () => {
     document.querySelectorAll(".buttonDelete").forEach(btn => {
-        btn.addEventListener("click", () => {
-            expenseValue.textContent = parseInt(expenseValue.textContent) - parseInt(btn.parentElement.previousElementSibling.textContent)
-            balanceValue.textContent = parseInt(balanceValue.textContent) + parseInt(btn.parentElement.previousElementSibling.textContent)
-            btn.parentElement.parentElement.parentElement.parentElement.parentElement.remove();
+        btn.addEventListener("click", (e) => {
+            expenseValue.textContent = setExpense(+document.querySelector("#" + e.currentTarget.dataset.cost).textContent);
+            balanceValue.textContent = setBalance();
 
+            document.querySelector("#" + e.currentTarget.dataset.parent).remove();
         })
-})
-}
 
-const updateList = () => {
-
-    document.querySelectorAll(".buttonEdit").forEach(btn => {
-        btn.addEventListener("click", () => {
-
-            inputLabel.value = btn.parentElement.parentElement.previousElementSibling.lastElementChild.textContent;
-            inputCost.value = btn.parentElement.previousElementSibling.previousElementSibling.textContent;
-
-            buttonAddList.style.display = "none";
-            document.querySelector(".updateAction").style.display = "block";
-
-            document.querySelector(".updList").addEventListener("click", () => {
-                previousValue = btn.parentElement.previousElementSibling.previousElementSibling.textContent
-                btn.parentElement.parentElement.previousElementSibling.lastElementChild.textContent = inputLabel.value;
-                btn.parentElement.previousElementSibling.previousElementSibling.textContent = inputCost.value;
-
-                expenseValue.textContent = parseInt(expenseValue.textContent) - parseInt(previousValue) + parseInt(inputCost.value)
-                balanceValue.textContent = parseInt(balanceValue.textContent) + parseInt(previousValue) - parseInt(inputCost.value)
-
-                inputLabel.value = "";
-                inputCost.value = "";
-                buttonAddList.style.display = "block";
-                document.querySelector(".updateAction").style.display = "none";
-            })
-            document.querySelector(".cancelUpd").addEventListener("click", () => {
-
-                inputLabel.value = "";
-                inputCost.value = "";
-                buttonAddList.style.display = "block";
-                document.querySelector(".updateAction").style.display = "none";
-            })
-            
-        })
     })
 }
 
 
-buttonBudget.addEventListener("click",() => {
+document.querySelector(".setBudget").addEventListener("click", () => {
     addBudget();
 });
 
@@ -119,14 +102,6 @@ buttonAddList.addEventListener("click", () => {
     addList();
 });
 
-
-
-window.addEventListener("keypress",(e) => {
-    if (e.key === "Enter") {
-        addBudget();
-        addList();
-    }
-} )
 
 
 
