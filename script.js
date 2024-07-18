@@ -11,8 +11,6 @@ balanceValue.textContent = parseFloat("0");
 expenseValue.textContent = parseFloat("0");
 document.querySelector(".totalValue").textContent = parseFloat("0");
 
-document.querySelector(".updateButton").style.display = "none";
-
 let count = 0;
 
 function getDate() {
@@ -32,19 +30,28 @@ function setBalance() {
     return +document.querySelector(".totalValue").textContent - +expenseValue.textContent;
 }
 
+function reload() {
+    inputBudget.value = "";
+    inputLabel.value = "";
+    inputCost.value = "";
+    buttonAddList.style.display = "block";
+    document.querySelector(".updateButton").style.display = "none";
+}
+
 
 const addBudget = () => {
     if (inputBudget.value != "") {
         balanceValue.textContent = +inputBudget.value;
         document.querySelector(".totalValue").textContent = inputBudget.value;
     }
-    inputBudget.value = "";
+    reload();
 }
 
 const addList = () => {
     if (inputLabel.value.trim() != "" && inputCost.value != "" && inputCost.value <= +balanceValue.textContent) {
-        let parentId = `list-item-${count++}`
-        let costId = `list-cost-${count}`
+        let parentId = `list-item-${count++}`;
+        let labelId = `list-label-${count}`;
+        let costId = `list-cost-${count}`;
 
         let item = `
         <li class="list-group-item" id = "${parentId}">
@@ -53,12 +60,12 @@ const addList = () => {
                 <div class="row d-flex justify-content-between align-items-center">
                     <div class="fw-bold col-8 d-flex">
                         <span class="border-start border-primary border-4"></span>
-                        <h5 class= "mx-3">${inputLabel.value.trim()}</h5>
+                        <h5 class= "mx-3" id ="${labelId}">${inputLabel.value.trim()}</h5>
                     </div>
                     <div class="col-4 d-flex justify-content-end">
                         <h5 class="text-muted" id = "${costId}">${inputCost.value}</h5>
                         <span class="mx-3"><i class="fas fa-trash buttonDelete" data-parent= "${parentId}" data-cost = "${costId}"></i></span>
-                        <span class=""><i class="fas fa-edit buttonEdit"></i></span>
+                        <span class=""><i class="fas fa-edit buttonEdit" data-parent= "${parentId}" data-cost = "${costId}" data-label ="${labelId}" ></i></span>
                     </div>
                 </div>
             </div>
@@ -70,11 +77,10 @@ const addList = () => {
         expenseValue.textContent = addExpense(+inputCost.value);
         balanceValue.textContent = setBalance();
 
-        inputLabel.value = "";
-        inputCost.value = "";
+        reload();
 
-        deleteList()
-
+        deleteList();
+        updateList();
     }
 
 }
@@ -92,6 +98,40 @@ const deleteList = () => {
     })
 }
 
+const updateList = () => {
+    document.querySelectorAll(".buttonEdit").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+
+            buttonAddList.style.display = "none";
+            document.querySelector(".updateButton").style.display = "block";
+
+            inputLabel.value = document.querySelector("#" + e.currentTarget.dataset.label).textContent;
+            inputCost.value = document.querySelector("#" + e.currentTarget.dataset.cost).textContent;
+
+            validateUpd(inputCost.value);
+            cancelUpd();
+
+        })
+    })
+}
+
+const validateUpd = (costValue) => {
+    document.querySelector(".validateUpd").addEventListener("click", (e) => {
+        if (inputLabel.value.trim() != "" && inputCost.value != "" && inputCost.value <= +balanceValue.textContent + +costValue) {
+            console.log(inputLabel.value, inputCost.value);
+        }
+
+
+        reload();
+    })
+}
+
+const cancelUpd = () => {
+    document.querySelector(".cancelUpd").addEventListener("click", () => {
+        reload()
+    })
+}
+
 
 document.querySelector(".setBudget").addEventListener("click", () => {
     addBudget();
@@ -102,6 +142,8 @@ buttonAddList.addEventListener("click", () => {
     addList();
 });
 
-
+window.addEventListener("load", () => {
+    reload();
+})
 
 
