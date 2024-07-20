@@ -66,7 +66,7 @@ const addList = () => {
                     <div class="col-4 d-flex justify-content-end">
                         <h5 class="text-muted" id = "${costId}">${inputCost.value}</h5>
                         <span class="mx-3"><i class="fas fa-trash buttonDelete" data-parent= "${parentId}" data-cost = "${costId}"></i></span>
-                        <span class=""><i class="fas fa-edit buttonEdit" onclick = "updateList('${labelId}', '${costId}')" ></i></span>
+                        <span class=""><i class="fas fa-edit buttonEdit" onclick = "updateExpense('${labelId}', '${costId}')" ></i></span>
                     </div>
                 </div>
             </div>
@@ -99,24 +99,22 @@ const deleteList = () => {
     })
 }
 
-const updateList = (label, cost) => {
+const updateExpense = (label, cost) => {
+    const labelItem = document.querySelector("#" + label);
+    const costItem = document.querySelector("#" + cost);
+    const valideUpdateButton = document.querySelector(".validateUpd");
+
     buttonAddList.style.display = "none";
     document.querySelector(".updateButton").style.display = "block";
 
+    inputLabel.value = labelItem.textContent;
+    inputCost.value = costItem.textContent;
 
-    inputLabel.value = document.querySelector("#" + label).textContent;
-    inputCost.value = document.querySelector("#" + cost).textContent;
-
-    let previousValue = document.querySelector("#" + cost).textContent;
-
-    document.querySelector(".validateUpd").addEventListener("click", () => {
-
-        document.querySelector("#" + label).textContent = inputLabel.value.trim();
-        document.querySelector("#" + cost).textContent = inputCost.value;
+    valideUpdateButton.onclick =  () => {
+        labelItem.textContent = inputLabel.value.trim();
+        costItem.textContent = inputCost.value;
         reload();
-
-    })
-
+    }
 }
 
 
