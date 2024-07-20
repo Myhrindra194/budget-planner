@@ -34,8 +34,8 @@ function reload() {
     inputBudget.value = "";
     inputLabel.value = "";
     inputCost.value = "";
-    buttonAddList.style.display = "block";
     document.querySelector(".updateButton").style.display = "none";
+    buttonAddList.style.display = "block";
 }
 
 
@@ -48,7 +48,8 @@ const addBudget = () => {
 }
 
 const addList = () => {
-    if (inputLabel.value.trim() != "" && inputCost.value != "" && inputCost.value <= +balanceValue.textContent) {
+    if (inputLabel.value.trim() != "" && inputCost.value != "" && inputCost.value > 0 && inputCost.value <= +balanceValue.textContent) {
+
         let parentId = `list-item-${count++}`;
         let labelId = `list-label-${count}`;
         let costId = `list-cost-${count}`;
@@ -65,7 +66,7 @@ const addList = () => {
                     <div class="col-4 d-flex justify-content-end">
                         <h5 class="text-muted" id = "${costId}">${inputCost.value}</h5>
                         <span class="mx-3"><i class="fas fa-trash buttonDelete" data-parent= "${parentId}" data-cost = "${costId}"></i></span>
-                        <span class=""><i class="fas fa-edit buttonEdit" data-parent= "${parentId}" data-cost = "${costId}" data-label ="${labelId}" ></i></span>
+                        <span class=""><i class="fas fa-edit buttonEdit" onclick = "updateList('${labelId}', '${costId}')" ></i></span>
                     </div>
                 </div>
             </div>
@@ -80,7 +81,6 @@ const addList = () => {
         reload();
 
         deleteList();
-        updateList();
     }
 
 }
@@ -89,7 +89,8 @@ const addList = () => {
 const deleteList = () => {
     document.querySelectorAll(".buttonDelete").forEach(btn => {
         btn.addEventListener("click", (e) => {
-            expenseValue.textContent = setExpense(+document.querySelector("#" + e.currentTarget.dataset.cost).textContent);
+            let costValue = +document.querySelector("#" + e.currentTarget.dataset.cost).textContent;
+            expenseValue.textContent = setExpense(costValue);
             balanceValue.textContent = setBalance();
 
             document.querySelector("#" + e.currentTarget.dataset.parent).remove();
@@ -98,52 +99,34 @@ const deleteList = () => {
     })
 }
 
-const updateList = () => {
-    document.querySelectorAll(".buttonEdit").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-
-            buttonAddList.style.display = "none";
-            document.querySelector(".updateButton").style.display = "block";
-
-            inputLabel.value = document.querySelector("#" + e.currentTarget.dataset.label).textContent;
-            inputCost.value = document.querySelector("#" + e.currentTarget.dataset.cost).textContent;
-
-            validateUpd(inputCost.value);
-            cancelUpd();
-
-        })
-    })
-}
-
-const validateUpd = (costValue) => {
-    document.querySelector(".validateUpd").addEventListener("click", (e) => {
-        if (inputLabel.value.trim() != "" && inputCost.value != "" && inputCost.value <= +balanceValue.textContent + +costValue) {
-            console.log(inputLabel.value, inputCost.value);
-        }
+const updateList = (label, cost) => {
+    buttonAddList.style.display = "none";
+    document.querySelector(".updateButton").style.display = "block";
 
 
+    inputLabel.value = document.querySelector("#" + label).textContent;
+    inputCost.value = document.querySelector("#" + cost).textContent;
+
+    let previousValue = document.querySelector("#" + cost).textContent;
+
+    document.querySelector(".validateUpd").addEventListener("click", () => {
+
+        document.querySelector("#" + label).textContent = inputLabel.value.trim();
+        document.querySelector("#" + cost).textContent = inputCost.value;
         reload();
-    })
-}
 
-const cancelUpd = () => {
-    document.querySelector(".cancelUpd").addEventListener("click", () => {
-        reload()
     })
+
 }
 
 
-document.querySelector(".setBudget").addEventListener("click", () => {
-    addBudget();
-});
 
+const cancelUpd = () => reload()
 
-buttonAddList.addEventListener("click", () => {
-    addList();
-});
+document.querySelector(".setBudget").addEventListener("click", () => addBudget());
 
-window.addEventListener("load", () => {
-    reload();
-})
+buttonAddList.addEventListener("click", () => addList());
+
+window.addEventListener("load", () => reload());
 
 
