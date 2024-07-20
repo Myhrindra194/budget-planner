@@ -110,9 +110,18 @@ const updateExpense = (label, cost) => {
     inputLabel.value = labelItem.textContent;
     inputCost.value = costItem.textContent;
 
-    valideUpdateButton.onclick =  () => {
-        labelItem.textContent = inputLabel.value.trim();
-        costItem.textContent = inputCost.value;
+    let previousValue = inputCost.value;
+
+    valideUpdateButton.onclick = () => {
+        if (inputLabel.value.trim() != "" && inputCost.value != "" && inputCost.value <= +balanceValue.textContent + +previousValue) {
+            labelItem.textContent = inputLabel.value.trim();
+            costItem.textContent = inputCost.value;
+
+            expenseValue.textContent = setExpense(+previousValue);
+            expenseValue.textContent = addExpense(+costItem.textContent);
+            balanceValue.textContent = setBalance();
+        }
+
         reload();
     }
 }
